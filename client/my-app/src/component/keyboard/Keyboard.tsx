@@ -5,15 +5,17 @@ const secondRow = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'];
 const thirdRow = ['Z', 'X', 'C', 'V', 'B', 'N', 'M'];
 
 type KeyBoardProps = {
-    onClick?: () => void;
+    onClick: (key: string) => void;
 };
 
-const KeyBoard = ({ onClick }) => {
+const KeyBoard = ({ onClick }: KeyBoardProps) => {
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 {firstRow.map((key) => (
-                    <Key key={key}>{key}</Key>
+                    <Key key={key} onClick={() => onClick(key)}>
+                        {key}
+                    </Key>
                 ))}
             </div>
             <div style={{ display: 'flex', justifyContent: 'center' }}>

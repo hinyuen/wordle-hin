@@ -1,0 +1,16 @@
+.char-selection {
+    height: 62px;
+    width: 62px;
+    display: grid;
+    place-items: center;
+    font-size: 2rem;
+    border : 2px solid rgb(58,58,60);
+    font-weight: 700;
+}
+
+.char-selection-row {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 6px;
+}
