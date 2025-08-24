@@ -6,9 +6,10 @@ const thirdRow = ['Z', 'X', 'C', 'V', 'B', 'N', 'M'];
 
 type KeyBoardProps = {
     onClick: (key: string) => void;
+    deleteKey: () => void;
 };
 
-const KeyBoard = ({ onClick }: KeyBoardProps) => {
+const KeyBoard = ({ onClick, deleteKey }: KeyBoardProps) => {
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -20,15 +21,21 @@ const KeyBoard = ({ onClick }: KeyBoardProps) => {
             </div>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 {secondRow.map((key) => (
-                    <Key key={key}>{key}</Key>
+                    <Key key={key} onClick={() => onClick(key)}>
+                        {key}
+                    </Key>
                 ))}
             </div>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <Key key="Enter">Enter</Key>
                 {thirdRow.map((key) => (
-                    <Key key={key}>{key}</Key>
+                    <Key key={key} onClick={() => onClick(key)}>
+                        {key}
+                    </Key>
                 ))}
-                <Key key="Delete">Delete</Key>
+                <Key key="Delete" onClick={deleteKey}>
+                    Delete
+                </Key>
             </div>
         </div>
     );
