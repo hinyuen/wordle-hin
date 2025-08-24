@@ -1,0 +1,35 @@
+import Key from '../key/Key';
+
+const firstRow = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'];
+const secondRow = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'];
+const thirdRow = ['Z', 'X', 'C', 'V', 'B', 'N', 'M'];
+
+type KeyBoardProps = {
+    onClick?: () => void;
+};
+
+const KeyBoard = ({ onClick }) => {
+    return (
+        <div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                {firstRow.map((key) => (
+                    <Key key={key}>{key}</Key>
+                ))}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                {secondRow.map((key) => (
+                    <Key key={key}>{key}</Key>
+                ))}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <Key key="Enter">Enter</Key>
+                {thirdRow.map((key) => (
+                    <Key key={key}>{key}</Key>
+                ))}
+                <Key key="Delete">Delete</Key>
+            </div>
+        </div>
+    );
+};
+
+export default KeyBoard;
