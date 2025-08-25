@@ -23,6 +23,8 @@ const initialAttemptList = Array.from({ length: BASE_ATTEMPTS }, () => ({
 const MainBoard = () => {
     const [answer, setAnswer] = useState<string>(BASE_ANSWER[Math.floor(Math.random() * BASE_ANSWER.length)]);
     const [attemptList, setAttemptList] = useImmer<Attempt[]>(initialAttemptList);
+    const [selectedKey, setSelectedKey] = useState(new Map<string, ResultType>());
+
     const findFirstUnSubmitted = (attemptList: Attempt[] = []) => {
         const index = attemptList.findIndex((attempt) => !attempt.isSubmit);
         return index;
@@ -73,20 +75,49 @@ const MainBoard = () => {
         return att.selection.every((item) => item.letter.length > 0);
     }, [attemptList]);
 
+    const saveSelectedKey = (selectedKeyList: LetterData[]) => {
+        const clonedMap = new Map<string, ResultType>(selectedKey);
+        selectedKeyList.forEach((v) => {
+            if (!clonedMap.has(v.letter)) {
+                clonedMap.set(v.letter, v.type);
+            }
+            const existingType = clonedMap.get(v.letter);
+            if (!existingType) return;
+            switch (existingType) {
+                case ResultType.PRESENT:
+                    if (v.type === ResultType.HIT) {
+                        clonedMap.set(v.letter, ResultType.HIT);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        });
+        setSelectedKey(clonedMap);
+    };
+
     const onSubmit = () => {
         const unSubmittedIndex = findFirstUnSubmitted(attemptList);
         if (unSubmittedIndex === -1) return;
         const att = attemptList[unSubmittedIndex];
+        const selectedKeyList: LetterData[] = [];
         const verifiedSelection = att.selection.map((v, i) => {
             const answerLetter = answer[i];
+            let baseData = {
+                letter: v.letter,
+                type: ResultType.MISS,
+            };
             if (v.letter === answerLetter) {
-                return { ...v, type: ResultType.HIT };
+                baseData.type = ResultType.HIT;
             }
-            if (answer.includes(v.letter)) {
-                return { ...v, type: ResultType.PRESENT };
+            if (baseData.type === ResultType.MISS && answer.includes(v.letter)) {
+                baseData.type = ResultType.PRESENT;
             }
-            return { ...v, type: ResultType.MISS };
+            selectedKeyList.push(baseData);
+            return baseData;
         });
+
+        saveSelectedKey(selectedKeyList);
 
         setAttemptList((draft) => {
             draft[unSubmittedIndex].isSubmit = true;
@@ -110,7 +141,9 @@ const MainBoard = () => {
                 }}
                 enableSubmit={enableSubmit}
                 onSubmit={onSubmit}
+                selectedKey={selectedKey}
             />
+            {/* <button onClick={() => console.log('selectedKeys => ', selectedKey)}>log</button> */}
         </>
     );
 };
