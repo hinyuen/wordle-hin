@@ -1,0 +1,16 @@
+export enum ResultType {
+    HIT = 'HIT',
+    MISS = 'MISS',
+    PRESENT = 'PRESENT',
+    EMPTY = 'EMPTY',
+}
+
+export type LetterData = {
+    letter: string;
+    type: ResultType;
+};
+
+export type Attempt = {
+    isSubmit: boolean;
+    selection: LetterData[];
+};

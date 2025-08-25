@@ -2,24 +2,19 @@ import { useMemo, useState } from 'react';
 import { useImmer } from 'use-immer';
 import CharSelectionRow from '../charSelectionRow/CharSelectionRow';
 import KeyBoard from '../keyboard/Keyboard';
+import { Attempt, LetterData, ResultType } from './type';
 
 const BASE_ANSWER = ['HELLO', 'WORLD', 'QUITE', 'FANCY', 'FRESH', 'PANIC', 'CRAZY', 'BUGGY', 'SCARE'];
 export const LETTER_LIMIT = 5;
 const BASE_ATTEMPTS = 5;
 
-const ResultType = {
-    HIT: 'HIT',
-    MISS: 'MISS',
-    PRESENT: 'PRESENT',
-};
-
-const BASE_LETTER_DATA = {
+const BASE_LETTER_DATA: LetterData = {
     letter: '',
-    type: '',
+    type: ResultType.EMPTY,
 };
 
-const BASE_ATTEMPT_OBJ = {
-    selection: ['', '', '', '', ''],
+const BASE_ATTEMPT_OBJ: Attempt = {
+    selection: [BASE_LETTER_DATA, BASE_LETTER_DATA, BASE_LETTER_DATA, BASE_LETTER_DATA, BASE_LETTER_DATA],
     isSubmit: false,
 };
 const initialAttemptList = Array.from({ length: BASE_ATTEMPTS }, () => ({
@@ -27,14 +22,14 @@ const initialAttemptList = Array.from({ length: BASE_ATTEMPTS }, () => ({
 }));
 const MainBoard = () => {
     const [answer, setAnswer] = useState<string>(BASE_ANSWER[Math.floor(Math.random() * BASE_ANSWER.length)]);
-    const [attemptList, setAttemptList] = useImmer<typeof initialAttemptList>(initialAttemptList);
-    const findFirstUnSubmitted = (attemptList: typeof initialAttemptList = []) => {
+    const [attemptList, setAttemptList] = useImmer<Attempt[]>(initialAttemptList);
+    const findFirstUnSubmitted = (attemptList: Attempt[] = []) => {
         const index = attemptList.findIndex((attempt) => !attempt.isSubmit);
         return index;
     };
 
-    const findFirstEmptySelection = (selection: string[] = []) => {
-        const index = selection.findIndex((item) => !item);
+    const findFirstEmptySelection = (selection: LetterData[] = []) => {
+        const index = selection.findIndex((item) => !item.letter.length);
         return index;
     };
 
@@ -47,26 +42,27 @@ const MainBoard = () => {
         for (let index = 0; index < cloned.length; index++) {
             const lastElement = cloned[cloned.length - index - 1];
             indexToRemove = cloned.length - index - 1;
-            if (lastElement !== '') {
+            if (lastElement.letter !== '') {
                 break;
             }
         }
         if (indexToRemove === -1) return;
         setAttemptList((draft) => {
-            draft[unSubmittedIndex].selection[indexToRemove] = '';
+            draft[unSubmittedIndex].selection[indexToRemove].letter = '';
         });
     };
 
-    const insertKey = (key) => {
+    const insertKey = (key: string) => {
         console.log('Inserting key', key);
         const unSubmittedIndex = findFirstUnSubmitted(attemptList);
         console.log('Unsubmitted index is', unSubmittedIndex);
         if (unSubmittedIndex === -1) return;
         const att = attemptList[unSubmittedIndex];
         const firstEmptyIndex = findFirstEmptySelection(att.selection);
+        console.log('First empty index is', firstEmptyIndex);
         if (firstEmptyIndex === -1) return;
         setAttemptList((draft) => {
-            draft[unSubmittedIndex].selection[firstEmptyIndex] = key;
+            draft[unSubmittedIndex].selection[firstEmptyIndex].letter = key;
         });
     };
 
@@ -74,7 +70,7 @@ const MainBoard = () => {
         const unSubmittedIndex = findFirstUnSubmitted(attemptList);
         if (unSubmittedIndex === -1) return false;
         const att = attemptList[unSubmittedIndex];
-        return att.selection.every((item) => item);
+        return att.selection.every((item) => item.letter.length > 0);
     }, [attemptList]);
     return (
         <>
