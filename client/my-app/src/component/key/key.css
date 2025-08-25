@@ -1,19 +1,13 @@
 .key-HIT {
-    border : 2px solid #538D4E;
-    /* font-weight: 700; */
     background-color: #538D4E;
 }
 .key-PRESENT {
-        border : 2px solid #B59F3B;
-    /* font-weight: 700; */
     background-color: #B59F3B;
 }
 .key-MISS {
-    border : 2px solid rgb(58,58,60);
-    /* font-weight: 700; */
     background-color: rgb(58,58,60);
 }
 
 .key-EMPTY {
-    
+
 }

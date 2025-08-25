@@ -1,8 +1,5 @@
 import { LetterData } from '../mainboard/type';
 import './charSelectionRow.css';
-
-export const BASE_LIST = ['', '', '', '', ''];
-
 export type CharSelectionRowProps = {
     selections: LetterData[];
 };

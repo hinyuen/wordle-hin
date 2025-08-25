@@ -1,5 +1,5 @@
 import Key from '../key/Key';
-import { ResultType } from '../mainboard/type';
+import { GameStatus, ResultType } from '../mainboard/type';
 import './keyboard.css';
 
 const firstRow = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'];
@@ -12,9 +12,10 @@ type KeyBoardProps = {
     onSubmit: () => void;
     enableSubmit: boolean;
     selectedKey: Map<string, ResultType>;
+    keysEnabled: boolean;
 };
 
-const KeyBoard = ({ insertKey, deleteKey, onSubmit, enableSubmit, selectedKey }: KeyBoardProps) => {
+const KeyBoard = ({ insertKey, deleteKey, onSubmit, enableSubmit, selectedKey, keysEnabled }: KeyBoardProps) => {
     const getKeyType = (key: string): ResultType => {
         if (!selectedKey.has(key)) return ResultType.EMPTY;
         const selected = selectedKey.get(key);
@@ -27,7 +28,7 @@ const KeyBoard = ({ insertKey, deleteKey, onSubmit, enableSubmit, selectedKey }:
             <div className="key-wrapper">
                 {firstRow.map((key) => {
                     return (
-                        <Key key={key} onClick={() => insertKey(key)} type={getKeyType(key)}>
+                        <Key key={key} onClick={() => insertKey(key)} type={getKeyType(key)} disabled={!keysEnabled}>
                             {key}
                         </Key>
                     );
@@ -35,7 +36,7 @@ const KeyBoard = ({ insertKey, deleteKey, onSubmit, enableSubmit, selectedKey }:
             </div>
             <div className="key-wrapper">
                 {secondRow.map((key) => (
-                    <Key key={key} onClick={() => insertKey(key)} type={getKeyType(key)}>
+                    <Key key={key} onClick={() => insertKey(key)} type={getKeyType(key)} disabled={!keysEnabled}>
                         {key}
                     </Key>
                 ))}
@@ -45,11 +46,11 @@ const KeyBoard = ({ insertKey, deleteKey, onSubmit, enableSubmit, selectedKey }:
                     Enter
                 </Key>
                 {thirdRow.map((key) => (
-                    <Key key={key} onClick={() => insertKey(key)} type={getKeyType(key)}>
+                    <Key key={key} onClick={() => insertKey(key)} type={getKeyType(key)} disabled={!keysEnabled}>
                         {key}
                     </Key>
                 ))}
-                <Key key="Delete" onClick={deleteKey}>
+                <Key key="Delete" onClick={deleteKey} disabled={!keysEnabled}>
                     Delete
                 </Key>
             </div>

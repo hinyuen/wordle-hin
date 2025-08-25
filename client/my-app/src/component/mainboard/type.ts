@@ -14,3 +14,9 @@ export type Attempt = {
     isSubmit: boolean;
     selection: LetterData[];
 };
+
+export enum GameStatus {
+    WON = 'WON',
+    LOSE = 'LOSE',
+    PLAYING = 'PLAYING',
+}
