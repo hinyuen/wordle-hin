@@ -9,10 +9,9 @@ type KeyBoardProps = {
     deleteKey: () => void;
     onSubmit: () => void;
     enableSubmit: boolean;
-    answer: string;
 };
 
-const KeyBoard = ({ insertKey, deleteKey, onSubmit, enableSubmit, answer }: KeyBoardProps) => {
+const KeyBoard = ({ insertKey, deleteKey, onSubmit, enableSubmit }: KeyBoardProps) => {
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'center' }}>

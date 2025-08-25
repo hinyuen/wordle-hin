@@ -72,6 +72,29 @@ const MainBoard = () => {
         const att = attemptList[unSubmittedIndex];
         return att.selection.every((item) => item.letter.length > 0);
     }, [attemptList]);
+
+    const onSubmit = () => {
+        const unSubmittedIndex = findFirstUnSubmitted(attemptList);
+        if (unSubmittedIndex === -1) return;
+        const att = attemptList[unSubmittedIndex];
+        const verifiedSelection = att.selection.map((v, i) => {
+            const answerLetter = answer[i];
+            if (v.letter === answerLetter) {
+                return { ...v, type: ResultType.HIT };
+            }
+            if (answer.includes(v.letter)) {
+                return { ...v, type: ResultType.PRESENT };
+            }
+            return { ...v, type: ResultType.MISS };
+        });
+
+        setAttemptList((draft) => {
+            draft[unSubmittedIndex].isSubmit = true;
+            draft[unSubmittedIndex].selection = verifiedSelection;
+        });
+    };
+
+    console.log('answer => ', answer);
     return (
         <>
             <h1>Hin's Wordle</h1>
@@ -86,8 +109,7 @@ const MainBoard = () => {
                     insertKey(key);
                 }}
                 enableSubmit={enableSubmit}
-                answer={answer}
-                onSubmit={() => console.log('submit')}
+                onSubmit={onSubmit}
             />
         </>
     );

@@ -11,7 +11,7 @@ const CharSelectionRow = ({ selections }: CharSelectionRowProps) => {
     return (
         <div className="char-selection-row">
             {selections.map((selection, i) => (
-                <div className="char-selection" key={`${selection.letter}-${i}`}>
+                <div className={`char-selection-${selection.type}`} key={`${selection.letter}-${i}`}>
                     {selection.letter}
                 </div>
             ))}

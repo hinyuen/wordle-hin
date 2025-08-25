@@ -1,4 +1,4 @@
-.char-selection {
+.char-selection-EMPTY {
     height: 62px;
     width: 62px;
     display: grid;
@@ -6,6 +6,39 @@
     font-size: 2rem;
     border : 2px solid rgb(58,58,60);
     font-weight: 700;
+}
+
+.char-selection-HIT {
+    height: 62px;
+    width: 62px;
+    display: grid;
+    place-items: center;
+    font-size: 2rem;
+    border : 2px solid #538D4E;
+    font-weight: 700;
+    background-color: #538D4E;
+}
+
+.char-selection-PRESENT {
+    height: 62px;
+    width: 62px;
+    display: grid;
+    place-items: center;
+    font-size: 2rem;
+    border : 2px solid #B59F3B;
+    font-weight: 700;
+    background-color: #B59F3B;
+}
+
+.char-selection-MISS {
+    height: 62px;
+    width: 62px;
+    display: grid;
+    place-items: center;
+    font-size: 2rem;
+    border : 2px solid rgb(58,58,60);
+    font-weight: 700;
+    background-color: rgb(58,58,60);
 }
 
 .char-selection-row {
