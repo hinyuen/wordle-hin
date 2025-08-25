@@ -1,5 +1,6 @@
 import './App.css';
 import MainBoard from './component/mainboard/MainBorad';
+import Background from './component/background/Background';
 
 function App() {
     return (
@@ -8,9 +9,5 @@ function App() {
         </Background>
     );
 }
-
-export const Background = ({ children }) => {
-    return <div style={{ width: '100%', height: '100vh' }}>{children}</div>;
-};
 
 export default App;

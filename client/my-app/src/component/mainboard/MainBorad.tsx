@@ -5,9 +5,10 @@ import KeyBoard from '../keyboard/Keyboard';
 import { Attempt, GameStatus, LetterData, ResultType } from './type';
 import ResultGrid from '../resultGrid/ResultGrid';
 import { initialAttemptList, generateRandomWord } from '../../util';
+import { useBackgroundContext } from '../background/context';
 
 const MainBoard = () => {
-    const [answer, setAnswer] = useState<string>(generateRandomWord());
+    const { answer, setAnswer } = useBackgroundContext();
     const [attemptList, setAttemptList] = useImmer<Attempt[]>(initialAttemptList);
     const [selectedKey, setSelectedKey] = useState(new Map<string, ResultType>());
     const [gameStatus, setGameStatus] = useState<GameStatus>(GameStatus.PLAYING);
@@ -68,6 +69,7 @@ const MainBoard = () => {
         selectedKeyList.forEach((v) => {
             if (!clonedMap.has(v.letter)) {
                 clonedMap.set(v.letter, v.type);
+                return;
             }
             const existingType = clonedMap.get(v.letter);
             if (!existingType) return;
