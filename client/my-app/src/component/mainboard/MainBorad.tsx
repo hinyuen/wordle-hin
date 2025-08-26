@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { useImmer } from 'use-immer';
 import CharSelectionRow from '../charSelectionRow/CharSelectionRow';
 import KeyBoard from '../keyboard/Keyboard';
 import { Attempt, GameStatus, LetterData, ResultType } from './type';
@@ -8,8 +7,7 @@ import { initialAttemptList, generateRandomWord } from '../../util';
 import { useBackgroundContext } from '../background/context';
 
 const MainBoard = () => {
-    const { answer, setAnswer } = useBackgroundContext();
-    const [attemptList, setAttemptList] = useImmer<Attempt[]>(initialAttemptList);
+    const { answer, setAnswer, attemptList, setAttemptList } = useBackgroundContext();
     const [selectedKey, setSelectedKey] = useState(new Map<string, ResultType>());
     const [gameStatus, setGameStatus] = useState<GameStatus>(GameStatus.PLAYING);
 
@@ -163,7 +161,6 @@ const MainBoard = () => {
                 selectedKey={selectedKey}
             />
             <ResultGrid gameStatus={gameStatus} onRestart={onRestart} />
-            {/* <button onClick={() => console.log('selectedKeys => ', selectedKey)}>log</button> */}
         </>
     );
 };

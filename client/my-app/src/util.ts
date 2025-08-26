@@ -1,4 +1,6 @@
 import { Attempt, LetterData, ResultType } from '../src/component/mainboard/type';
+
+import words from './words.json';
 export const BASE_ANSWER = ['HELLO', 'WORLD', 'QUITE', 'FANCY', 'FRESH', 'PANIC', 'CRAZY', 'BUGGY', 'SCARE', 'MARRY'];
 export const LETTER_LIMIT = 5;
 export const BASE_ATTEMPTS = 5;
@@ -21,3 +23,5 @@ export const generateRandomWord = () => {
     return BASE_ANSWER[Math.floor(Math.random() * BASE_ANSWER.length)];
     // return 'MARRY';
 };
+
+export const wordsList = words.words;
