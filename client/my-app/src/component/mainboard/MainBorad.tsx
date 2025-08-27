@@ -7,7 +7,8 @@ import { initialAttemptList } from '../../util';
 import { useBackgroundContext } from '../background/context';
 
 const MainBoard = () => {
-    const { answer, attemptList, setAttemptList, setGameStatus, gameStatus, getAnswer } = useBackgroundContext();
+    const { answer, attemptList, setAttemptList, setGameStatus, gameStatus, getAnswer, validateSelection } =
+        useBackgroundContext();
     const [selectedKey, setSelectedKey] = useState(new Map<string, ResultType>());
 
     const findFirstUnSubmitted = (attemptList: Attempt[] = []) => {
@@ -83,53 +84,15 @@ const MainBoard = () => {
         setSelectedKey(clonedMap);
     };
 
-    const checkGameStatus = (verifiedSelection: LetterData[], attLastIndex: number, currentIndex: number) => {
-        if (verifiedSelection.every((v) => v.type === ResultType.HIT)) {
-            setGameStatus(GameStatus.WON);
-            return;
+    const onSubmit = async () => {
+        try {
+            const verifiedRes = await validateSelection(attemptList, answer);
+            saveSelectedKey(verifiedRes.currentAttempt);
+            setAttemptList(verifiedRes.verifiedSelection);
+            setGameStatus(verifiedRes.gameStatus);
+        } catch (error) {
+            console.error('Error validating selection:', error);
         }
-        if (currentIndex === attLastIndex) {
-            setGameStatus(GameStatus.LOSE);
-            return;
-        }
-    };
-
-    const getVerifiedSelection = (selection: LetterData[]): LetterData[] => {
-        const unmatchedCount: Record<string, number> = {};
-        const hitSelection = selection.map((v, i) => {
-            const answerLetter = answer[i];
-            if (v.letter === answerLetter) {
-                return {
-                    ...v,
-                    type: ResultType.HIT,
-                };
-            }
-            unmatchedCount[answerLetter] = (unmatchedCount[answerLetter] || 0) + 1;
-            return { ...v, type: ResultType.MISS };
-        });
-
-        return hitSelection.map((v) => {
-            if (v.type === ResultType.MISS && unmatchedCount[v.letter]) {
-                unmatchedCount[v.letter] -= 1;
-                return { ...v, type: ResultType.PRESENT };
-            }
-            return v;
-        });
-    };
-
-    const onSubmit = () => {
-        const unSubmittedIndex = findFirstUnSubmitted(attemptList);
-        if (unSubmittedIndex === -1) return;
-        const att = attemptList[unSubmittedIndex];
-        const verifiedSelection = getVerifiedSelection(att.selection);
-        saveSelectedKey(verifiedSelection);
-        setAttemptList((draft) => {
-            draft[unSubmittedIndex].isSubmit = true;
-            draft[unSubmittedIndex].selection = verifiedSelection;
-        });
-        const lastIndex = attemptList.length - 1;
-        const currentIndex = unSubmittedIndex;
-        checkGameStatus(verifiedSelection, lastIndex, currentIndex);
     };
 
     const onRestart = async () => {

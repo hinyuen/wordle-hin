@@ -1,7 +1,7 @@
 import express from 'express';
 import type { Request, Response } from 'express';
 import cors from 'cors';
-import { BASE_ANSWER, generateRandomWord } from './util.js';
+import { generateRandomWord, handleValidateSelection } from './util.js';
 
 const app = express();
 const PORT = 3001;
@@ -24,7 +24,29 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.get('/answer', (req: Request, res: Response) => {
-    res.json({ answer: generateRandomWord() }).status(200);
+    try {
+        const answer = generateRandomWord();
+        res.json({ answer: answer }).status(200);
+    } catch (error) {
+        console.error('Error fetching answer:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.post('/validate', (req: Request, res: Response) => {
+    console.log('req.body => ', req.body);
+    const { answer, attempts } = req.body;
+    try {
+        const data = handleValidateSelection(attempts, answer);
+        res.json({
+            verifiedSelection: data.verifiedSelection,
+            currentAttempt: data.currentAttempt,
+            gameStatus: data.gameStatus,
+        }).status(200);
+    } catch (error) {
+        console.error('Error verifying selection:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
 
 app.listen(PORT, () => {

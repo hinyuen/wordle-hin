@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useImmer } from 'use-immer';
-import { Attempt, GameStatus } from '../component/mainboard/type';
-import { BASE_API_URL, generateRandomWord, initialAttemptList } from '../util';
+import { Attempt, GameStatus, VerifiedResponse } from '../component/mainboard/type';
+import { BASE_API_URL, initialAttemptList } from '../util';
 
 const useGameSetUp = () => {
     const [answer, setAnswer] = useState<string>('');
@@ -18,6 +18,18 @@ const useGameSetUp = () => {
         }
     };
 
+    const validateSelection = async (attempts: Attempt[], answer: string): Promise<VerifiedResponse> => {
+        const res = await fetch(`${BASE_API_URL}/validate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ attempts, answer }),
+        });
+        const data = (await res.json()) as VerifiedResponse;
+        return data;
+    };
+
     useEffect(() => {
         getAnswer();
     }, []);
@@ -30,6 +42,7 @@ const useGameSetUp = () => {
         gameStatus,
         setGameStatus,
         getAnswer,
+        validateSelection,
     };
 };
 

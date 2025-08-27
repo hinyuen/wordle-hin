@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react';
-import { Attempt, GameStatus } from '../mainboard/type';
+import { Attempt, GameStatus, VerifiedResponse } from '../mainboard/type';
 import { Updater } from 'use-immer';
 type BackgroundContextType = {
     answer: string;
@@ -9,6 +9,7 @@ type BackgroundContextType = {
     gameStatus: GameStatus;
     setGameStatus: React.Dispatch<React.SetStateAction<GameStatus>>;
     getAnswer: () => Promise<void>;
+    validateSelection: (attempts: Attempt[], answer: string) => Promise<VerifiedResponse>;
 };
 export const BackgroundContext = createContext<BackgroundContextType | undefined>(undefined);
 
