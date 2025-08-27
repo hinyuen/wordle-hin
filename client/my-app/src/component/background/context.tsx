@@ -1,13 +1,14 @@
 import React, { createContext, useContext } from 'react';
 import { Attempt, GameStatus } from '../mainboard/type';
-
+import { Updater } from 'use-immer';
 type BackgroundContextType = {
     answer: string;
     setAnswer: React.Dispatch<React.SetStateAction<string>>;
     attemptList: Attempt[];
-    setAttemptList: (updater: any) => void;
+    setAttemptList: Updater<Attempt[]>;
     gameStatus: GameStatus;
     setGameStatus: React.Dispatch<React.SetStateAction<GameStatus>>;
+    getAnswer: () => Promise<void>;
 };
 export const BackgroundContext = createContext<BackgroundContextType | undefined>(undefined);
 

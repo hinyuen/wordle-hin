@@ -1,14 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Setting from '../setting/Setting';
 import { BackgroundContext } from './context';
-import { generateRandomWord, initialAttemptList } from '../../util';
-import { useImmer } from 'use-immer';
-import { Attempt, GameStatus } from '../mainboard/type';
+import useGameSetUp from '../../hooks/useGameSetUp';
 
 export const Background: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
-    const [answer, setAnswer] = useState<string>(generateRandomWord());
-    const [attemptList, setAttemptList] = useImmer<Attempt[]>(initialAttemptList);
-    const [gameStatus, setGameStatus] = useState<GameStatus>(GameStatus.PLAYING);
+    const { answer, setAnswer, attemptList, setAttemptList, gameStatus, setGameStatus, getAnswer } = useGameSetUp();
 
     return (
         <div style={{ width: '100%', height: '100vh' }}>
@@ -20,6 +16,7 @@ export const Background: React.FC<React.PropsWithChildren<{}>> = ({ children }) 
                     setAttemptList,
                     gameStatus,
                     setGameStatus,
+                    getAnswer,
                 }}
             >
                 <Setting />

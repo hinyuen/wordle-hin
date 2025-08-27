@@ -25,3 +25,5 @@ export const generateRandomWord = () => {
 };
 
 export const wordsList = words.words;
+
+export const BASE_API_URL = 'http://localhost:3001';

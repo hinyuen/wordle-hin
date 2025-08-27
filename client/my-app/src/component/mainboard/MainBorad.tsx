@@ -3,13 +3,12 @@ import CharSelectionRow from '../charSelectionRow/CharSelectionRow';
 import KeyBoard from '../keyboard/Keyboard';
 import { Attempt, GameStatus, LetterData, ResultType } from './type';
 import ResultGrid from '../resultGrid/ResultGrid';
-import { initialAttemptList, generateRandomWord } from '../../util';
+import { initialAttemptList } from '../../util';
 import { useBackgroundContext } from '../background/context';
 
 const MainBoard = () => {
-    const { answer, setAnswer, attemptList, setAttemptList } = useBackgroundContext();
+    const { answer, attemptList, setAttemptList, setGameStatus, gameStatus, getAnswer } = useBackgroundContext();
     const [selectedKey, setSelectedKey] = useState(new Map<string, ResultType>());
-    const [gameStatus, setGameStatus] = useState<GameStatus>(GameStatus.PLAYING);
 
     const findFirstUnSubmitted = (attemptList: Attempt[] = []) => {
         const index = attemptList.findIndex((attempt) => !attempt.isSubmit);
@@ -133,10 +132,10 @@ const MainBoard = () => {
         checkGameStatus(verifiedSelection, lastIndex, currentIndex);
     };
 
-    const onRestart = () => {
+    const onRestart = async () => {
+        await getAnswer();
         setAttemptList(initialAttemptList);
         setGameStatus(GameStatus.PLAYING);
-        setAnswer(generateRandomWord());
         setSelectedKey(new Map<string, ResultType>());
     };
 
