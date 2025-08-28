@@ -1,15 +1,16 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
-import App from './App.jsx';
+import SingleBoard from './page/main/SingleBoard.jsx';
 import { BrowserRouter, Route, Routes } from 'react-router';
+import MultiRulePage from './page/multiRule/MultiRule.js';
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
         <BrowserRouter>
             <Routes>
-                {/* <Route path="/" element={<LandingPage />} /> */}
-                <Route path="/" element={<App />} />
+                <Route path="/" element={<SingleBoard />} />
+                <Route path="/multiplayer" element={<MultiRulePage />} />
             </Routes>
         </BrowserRouter>
     </StrictMode>
