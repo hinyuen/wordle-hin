@@ -26,3 +26,10 @@ export type VerifiedResponse = {
     currentAttempt: LetterData[];
     gameStatus: GameStatus;
 };
+
+export type SocketVerifiedResponse = {
+    verifiedSelection: Attempt[];
+    currentAttempt: LetterData[];
+    gameStatus: GameStatus;
+    userId: string;
+};

@@ -18,6 +18,11 @@ type BackgroundContextType = {
     setSelectedKey: React.Dispatch<React.SetStateAction<Map<string, ResultType>>>;
     oppAttemptList: Attempt[];
     setOppAttemptList: Updater<Attempt[]>;
+    oppGameStatus: GameStatus;
+    setOppGameStatus: React.Dispatch<React.SetStateAction<GameStatus>>;
+    oppSelectedKey: Map<string, ResultType>;
+    setOppSelectedKey: React.Dispatch<React.SetStateAction<Map<string, ResultType>>>;
+    saveOppSelectedKey: (selectedKeyList: LetterData[]) => void;
 };
 export const BackgroundContext = createContext<BackgroundContextType | undefined>(undefined);
 

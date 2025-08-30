@@ -26,3 +26,8 @@ export type VerifiedResponse = {
     currentAttempt: LetterData[];
     gameStatus: GameStatus;
 };
+
+export type SocketVerifiedResponse = {
+    userId: string;
+    data: VerifiedResponse;
+};

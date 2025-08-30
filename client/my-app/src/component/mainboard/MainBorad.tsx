@@ -47,7 +47,13 @@ const MainBoard = () => {
             <h1>Hin's Wordle</h1>
             <div style={{ marginBottom: '1rem' }}>
                 {attemptList.map((attempt, idx) => {
-                    return <CharSelectionRow key={`attempt-${idx}`} selections={attempt.selection} />;
+                    return (
+                        <CharSelectionRow
+                            key={`attempt-${idx}`}
+                            selections={attempt.selection}
+                            needHideAnswer={false}
+                        />
+                    );
                 })}
             </div>
             <KeyBoard

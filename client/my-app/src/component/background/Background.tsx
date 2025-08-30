@@ -21,6 +21,11 @@ export const Background: React.FC<React.PropsWithChildren<{ isMulti?: boolean }>
         setSelectedKey,
         setOppAttemptList,
         oppAttemptList,
+        oppGameStatus,
+        setOppGameStatus,
+        oppSelectedKey,
+        setOppSelectedKey,
+        saveOppSelectedKey,
     } = useGameSetUp();
 
     return (
@@ -43,6 +48,11 @@ export const Background: React.FC<React.PropsWithChildren<{ isMulti?: boolean }>
                     setSelectedKey,
                     setOppAttemptList,
                     oppAttemptList,
+                    oppGameStatus,
+                    setOppGameStatus,
+                    oppSelectedKey,
+                    setOppSelectedKey,
+                    saveOppSelectedKey,
                 }}
             >
                 <Setting isMulti={isMulti} />

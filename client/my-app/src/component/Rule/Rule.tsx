@@ -6,7 +6,7 @@ export const RuleText = () => {
     return (
         <>
             <h2>You know the drill. </h2>
-            <h2> 1 word, 5 letters, 6 guesses. </h2>
+            <h2> 1 word, 5 letters, 5 guesses. </h2>
             <h2>Can you beat your friends?</h2>
         </>
     );

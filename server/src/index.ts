@@ -4,6 +4,7 @@ import cors from 'cors';
 import { generateRandomWord, handleValidateSelection } from './util.js';
 import http from 'http';
 import { Server } from 'socket.io';
+import { Attempt, GameStatus } from './type.js';
 
 const app = express();
 const PORT = 3001;
@@ -71,6 +72,7 @@ io.on('connection', (socket) => {
     socket.on('join', ({ gameId }) => {
         if (!gameData.has(gameId)) {
             const answer = generateRandomWord();
+            console.log('gen answer => ', answer);
             gameData.set(gameId, { answer });
         }
         const room = io.sockets.adapter.rooms.get(gameId);
@@ -93,8 +95,19 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('gameStart', ({ gameId }) => {
+    socket.on('gameStart', ({ gameId }: { gameId: string }) => {
         io.to(gameId).emit('gameStarted', { message: 'Game has started!' });
+    });
+
+    socket.on('submitAttempt', ({ gameId, attempts }: { gameId: string; attempts: Attempt[] }) => {
+        console.log('gameId', gameId);
+        console.log('attempts', attempts);
+        const game = gameData.get(gameId);
+        const answer = game?.answer;
+        console.log('get answer => ', answer);
+        if (!answer) return;
+        const data = handleValidateSelection(attempts, answer);
+        io.to(gameId).emit('validationResult', { data: data, userId: socket.id });
     });
 
     socket.on('disconnect', () => {

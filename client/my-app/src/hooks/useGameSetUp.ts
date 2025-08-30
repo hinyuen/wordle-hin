@@ -6,9 +6,11 @@ import { BASE_API_URL, findFirstEmptySelection, findFirstUnSubmitted, initialAtt
 const useGameSetUp = () => {
     const [answer, setAnswer] = useState<string>('');
     const [attemptList, setAttemptList] = useImmer<Attempt[]>(initialAttemptList);
-    const [oppAttemptList, setOppAttemptList] = useImmer<Attempt[]>(initialAttemptList);
     const [gameStatus, setGameStatus] = useState<GameStatus>(GameStatus.PLAYING);
     const [selectedKey, setSelectedKey] = useState(new Map<string, ResultType>());
+    const [oppAttemptList, setOppAttemptList] = useImmer<Attempt[]>(initialAttemptList);
+    const [oppGameStatus, setOppGameStatus] = useState<GameStatus>(GameStatus.PLAYING);
+    const [oppSelectedKey, setOppSelectedKey] = useState(new Map<string, ResultType>());
 
     useEffect(() => {
         getAnswer();
@@ -70,6 +72,8 @@ const useGameSetUp = () => {
     };
 
     const saveSelectedKey = (selectedKeyList: LetterData[]) => {
+        console.log('Saving selected keys:', selectedKeyList);
+        console.log('Current selected key map:', selectedKey);
         const clonedMap = new Map<string, ResultType>(selectedKey);
         selectedKeyList.forEach((v) => {
             if (!clonedMap.has(v.letter)) {
@@ -89,6 +93,30 @@ const useGameSetUp = () => {
             }
         });
         setSelectedKey(clonedMap);
+    };
+
+    const saveOppSelectedKey = (selectedKeyList: LetterData[]) => {
+        console.log('Saving selected keys:', selectedKeyList);
+        console.log('Current selected key map:', oppSelectedKey);
+        const clonedMap = new Map<string, ResultType>(oppSelectedKey);
+        selectedKeyList.forEach((v) => {
+            if (!clonedMap.has(v.letter)) {
+                clonedMap.set(v.letter, v.type);
+                return;
+            }
+            const existingType = clonedMap.get(v.letter);
+            if (!existingType) return;
+            switch (existingType) {
+                case ResultType.PRESENT:
+                    if (v.type === ResultType.HIT) {
+                        clonedMap.set(v.letter, ResultType.HIT);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        });
+        setOppSelectedKey(clonedMap);
     };
 
     const enableSubmit = useMemo(() => {
@@ -116,6 +144,11 @@ const useGameSetUp = () => {
         setSelectedKey,
         setOppAttemptList,
         oppAttemptList,
+        oppGameStatus,
+        setOppGameStatus,
+        oppSelectedKey,
+        setOppSelectedKey,
+        saveOppSelectedKey,
     };
 };
 

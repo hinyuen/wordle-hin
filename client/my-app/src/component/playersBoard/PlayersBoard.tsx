@@ -4,27 +4,32 @@ import RuleModal from '../Rule/RuleModal';
 import { io, Socket } from 'socket.io-client';
 import { BASE_API_URL } from '../../util';
 import KeyBoard from '../keyboard/Keyboard';
-import { GameStatus } from '../mainboard/type';
+import { GameStatus, SocketVerifiedResponse } from '../mainboard/type';
 import { useBackgroundContext } from '../background/context';
 import CharSelectionRow from '../charSelectionRow/CharSelectionRow';
 import ResultGrid from '../resultGrid/ResultGrid';
 
 const PlayersBoard = () => {
     const socketRef = useRef<Socket | null>(null);
+    const userIdRef = useRef<string | undefined>(undefined);
     const params = useParams();
     const [open, setOpen] = useState(true);
     const [playersReady, setPlayersReady] = useState(false);
-    const [userId, setUserId] = useState<string | undefined>(undefined);
     const {
         setGameStatus,
         gameStatus,
         attemptList,
         selectedKey,
-        setSelectedKey,
         oppAttemptList,
         enableSubmit,
         deleteKey,
         insertKey,
+        saveSelectedKey,
+        setAttemptList,
+        saveOppSelectedKey,
+        setOppAttemptList,
+        setOppGameStatus,
+        oppGameStatus,
     } = useBackgroundContext();
 
     const handleStartGame = () => {
@@ -39,7 +44,7 @@ const PlayersBoard = () => {
         if (socketRef.current) {
             socketRef.current.on('connect', () => {
                 console.log('Connected:', socketRef.current?.id);
-                setUserId(socketRef.current?.id);
+                userIdRef.current = socketRef.current?.id;
                 socketRef.current?.emit('join', { gameId });
             });
 
@@ -54,9 +59,21 @@ const PlayersBoard = () => {
                 setOpen(false);
             });
 
-            socketRef.current.on('opponentLeft', () => {
-                console.log('Your opponent has left the game.');
-                alert('Your opponent has left the game.');
+            socketRef.current.on('validationResult', (res: SocketVerifiedResponse) => {
+                console.log('Validation result:', res);
+                if (res.userId) {
+                    const data = res.data;
+                    if (res.userId === userIdRef.current) {
+                        console.log('got userId match');
+                        saveSelectedKey(data.currentAttempt);
+                        setAttemptList(data.verifiedSelection);
+                        setGameStatus(data.gameStatus);
+                    } else {
+                        saveOppSelectedKey(data.currentAttempt);
+                        setOppAttemptList(data.verifiedSelection);
+                        setOppGameStatus(data.gameStatus);
+                    }
+                }
             });
         }
 
@@ -67,14 +84,14 @@ const PlayersBoard = () => {
         };
     }, [params]);
 
-    console.log('userId => ', userId);
-
     const keyBoardEnabled = useMemo(() => {
-        if (!playersReady || gameStatus !== GameStatus.PLAYING) return false;
+        if (!playersReady || gameStatus !== GameStatus.PLAYING || oppGameStatus !== GameStatus.PLAYING) return false;
         return true;
-    }, [gameStatus, playersReady]);
+    }, [gameStatus, playersReady, oppGameStatus]);
 
     const onSubmit = () => {
+        if (!socketRef.current) return;
+        socketRef.current.emit('submitAttempt', { gameId: params?.gameId, attempts: attemptList });
         console.log('Submit');
     };
 
@@ -88,13 +105,25 @@ const PlayersBoard = () => {
                 <div style={{ marginBottom: '1rem' }}>
                     <h4>You</h4>
                     {attemptList.map((attempt, idx) => {
-                        return <CharSelectionRow key={`attempt-${idx}`} selections={attempt.selection} />;
+                        return (
+                            <CharSelectionRow
+                                key={`attempt-${idx}`}
+                                selections={attempt.selection}
+                                needHideAnswer={false}
+                            />
+                        );
                     })}
                 </div>
                 <div style={{ marginBottom: '1rem' }}>
                     <h4>Opponent</h4>
                     {oppAttemptList.map((attempt, idx) => {
-                        return <CharSelectionRow key={`attempt-${idx}`} selections={attempt.selection} />;
+                        return (
+                            <CharSelectionRow
+                                key={`attempt-${idx}`}
+                                selections={attempt.selection}
+                                needHideAnswer={true}
+                            />
+                        );
                     })}
                 </div>
             </div>
