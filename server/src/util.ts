@@ -136,3 +136,8 @@ export const handleValidateAbsurdleSelection = (
         gameStatus: gameStatus,
     };
 };
+
+export const isAttemptInsideWordList = (attempt: Attempt) => {
+    const userGuess = attempt.selection.map((v) => v.letter).join('');
+    return BASE_ANSWER.includes(userGuess);
+};

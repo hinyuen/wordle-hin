@@ -2,7 +2,7 @@ import { useNavigate, useParams } from 'react-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import RuleModal from '../Rule/RuleModal';
 import { io, Socket } from 'socket.io-client';
-import { BASE_API_URL, generateGameId, initMulitPlayerResult } from '../../util';
+import { BASE_ANSWER, BASE_API_URL, generateGameId, initMulitPlayerResult } from '../../util';
 import KeyBoard from '../keyboard/Keyboard';
 import { GameStatus, MultiPlayerResult, SocketVerifiedResponse } from '../../type';
 import { useBackgroundContext } from '../background/context';
@@ -33,6 +33,7 @@ const PlayersBoard = () => {
         setOppAttemptList,
         setOppGameStatus,
         oppGameStatus,
+        setSnackbarState,
     } = useBackgroundContext();
 
     useEffect(() => {
@@ -109,6 +110,17 @@ const PlayersBoard = () => {
 
     const onSubmit = () => {
         if (!socketRef.current) return;
+        const att = attemptList.find((a) => !a.isSubmit);
+        if (!att) return;
+        const userGuess = att.selection.map((s) => s.letter).join('');
+        if (!BASE_ANSWER.includes(userGuess)) {
+            setSnackbarState((draft) => {
+                draft.open = true;
+                draft.message = 'Attempt not in word list';
+            });
+            return;
+        }
+
         socketRef.current.emit('submitAttempt', { gameId: params?.gameId, attempts: attemptList });
     };
 

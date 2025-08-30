@@ -18,6 +18,7 @@ const AbsurdleGameBoard = () => {
         selectedKey,
         setSelectedKey,
         saveSelectedKey,
+        setSnackbarState,
     } = useBackgroundContext();
 
     const gameIdRef = useRef<string | null>(null);
@@ -41,6 +42,11 @@ const AbsurdleGameBoard = () => {
                 gameId,
             }),
         });
+        if (res.status !== 200) {
+            const errorData = await res.json();
+            throw new Error(errorData.error || 'Unknown error');
+        }
+
         const data = (await res.json()) as VerifiedResponse;
         return data;
     };
@@ -54,6 +60,14 @@ const AbsurdleGameBoard = () => {
             setGameStatus(res.gameStatus);
         } catch (error) {
             console.error('Error validating selection:', error);
+            let errMsg = 'Error validating selection';
+            if (error?.message && error?.message === 'INVALID_ATTEMPT') {
+                errMsg = 'Attempt not in word list';
+            }
+            setSnackbarState((draft) => {
+                draft.open = true;
+                draft.message = errMsg;
+            });
         }
     };
 

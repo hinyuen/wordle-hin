@@ -60,3 +60,8 @@ export const initMulitPlayerResult = {
     resultTxt: '',
     resultModalOpen: false,
 };
+
+export const initSnackbarState = {
+    open: false,
+    message: '',
+};

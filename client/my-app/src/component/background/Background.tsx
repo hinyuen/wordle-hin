@@ -2,6 +2,7 @@ import React from 'react';
 import Setting from '../setting/Setting';
 import { BackgroundContext } from './context';
 import useGameSetUp from '../../hooks/useGameSetUp';
+import { Snackbar } from '@mui/material';
 
 export const Background: React.FC<React.PropsWithChildren<{ isMulti?: boolean }>> = ({ children, isMulti = false }) => {
     const {
@@ -26,6 +27,8 @@ export const Background: React.FC<React.PropsWithChildren<{ isMulti?: boolean }>
         oppSelectedKey,
         setOppSelectedKey,
         saveOppSelectedKey,
+        setSnackbarState,
+        snackbarState,
     } = useGameSetUp();
 
     return (
@@ -53,9 +56,23 @@ export const Background: React.FC<React.PropsWithChildren<{ isMulti?: boolean }>
                     oppSelectedKey,
                     setOppSelectedKey,
                     saveOppSelectedKey,
+                    setSnackbarState,
+                    snackbarState,
                 }}
             >
                 <Setting isMulti={isMulti} />
+                <Snackbar
+                    style={{ color: 'white' }}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                    open={snackbarState.open}
+                    autoHideDuration={3500}
+                    onClose={() =>
+                        setSnackbarState((draft) => {
+                            draft.open = false;
+                        })
+                    }
+                    message={snackbarState.message}
+                />
                 {children}
             </BackgroundContext.Provider>
         </div>

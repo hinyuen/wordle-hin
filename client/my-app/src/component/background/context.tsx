@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react';
-import { Attempt, GameStatus, LetterData, ResultType, VerifiedResponse } from '../../type';
+import { Attempt, GameStatus, LetterData, ResultType, SnackBarStateType, VerifiedResponse } from '../../type';
 import { Updater } from 'use-immer';
 type BackgroundContextType = {
     answer: string;
@@ -23,6 +23,8 @@ type BackgroundContextType = {
     oppSelectedKey: Map<string, ResultType>;
     setOppSelectedKey: React.Dispatch<React.SetStateAction<Map<string, ResultType>>>;
     saveOppSelectedKey: (selectedKeyList: LetterData[]) => void;
+    snackbarState: SnackBarStateType;
+    setSnackbarState: Updater<SnackBarStateType>;
 };
 export const BackgroundContext = createContext<BackgroundContextType | undefined>(undefined);
 

@@ -36,3 +36,8 @@ export type MultiPlayerResult = {
     resultTxt: string;
     resultModalOpen: boolean;
 };
+
+export type SnackBarStateType = {
+    open: boolean;
+    message: string;
+};

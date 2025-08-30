@@ -1,7 +1,13 @@
 import express from 'express';
 import type { Request, Response } from 'express';
 import cors from 'cors';
-import { BASE_ANSWER, generateRandomWord, handleValidateAbsurdleSelection, handleValidateSelection } from './util.js';
+import {
+    BASE_ANSWER,
+    generateRandomWord,
+    handleValidateAbsurdleSelection,
+    handleValidateSelection,
+    isAttemptInsideWordList,
+} from './util.js';
 import http from 'http';
 import { Server } from 'socket.io';
 import { AbsurdleGame, Attempt } from './type.js';
@@ -48,6 +54,8 @@ app.get('/answer', (req: Request, res: Response) => {
 app.post('/validate', (req: Request, res: Response) => {
     const { answer, attempts } = req.body;
     try {
+        const isValid = isAttemptInsideWordList(attempts[0]);
+        if (!isValid) throw new Error('Attempt not in word list');
         const data = handleValidateSelection(attempts, answer);
         res.json({
             verifiedSelection: data.verifiedSelection,
@@ -55,8 +63,14 @@ app.post('/validate', (req: Request, res: Response) => {
             gameStatus: data.gameStatus,
         }).status(200);
     } catch (error) {
+        let errMsg = 'Internal Server Error';
+        if (error instanceof Error) {
+            if (error.message === 'Attempt not in word list') {
+                errMsg = 'INVALID_ATTEMPT';
+            }
+        }
         console.error('Error verifying selection:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: errMsg });
     }
 });
 
@@ -65,6 +79,8 @@ const absurdleGames = new Map<string, AbsurdleGame>();
 app.post('/validateAbsurdle', (req: Request, res: Response) => {
     try {
         const { attempts, gameId } = req.body;
+        const isValid = isAttemptInsideWordList(attempts[0]);
+        if (!isValid) throw new Error('Attempt not in word list');
         if (!absurdleGames.has(gameId)) {
             absurdleGames.set(gameId, { pool: BASE_ANSWER });
         }
@@ -75,8 +91,14 @@ app.post('/validateAbsurdle', (req: Request, res: Response) => {
             gameStatus: data.gameStatus,
         }).status(200);
     } catch (error) {
+        let errMsg = 'Internal Server Error';
+        if (error instanceof Error) {
+            if (error.message === 'Attempt not in word list') {
+                errMsg = 'INVALID_ATTEMPT';
+            }
+        }
         console.error('Error verifying selection:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: errMsg });
     }
 });
 

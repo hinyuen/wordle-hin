@@ -20,6 +20,7 @@ const MainBoard = () => {
         saveSelectedKey,
         selectedKey,
         setSelectedKey,
+        setSnackbarState,
     } = useBackgroundContext();
 
     const onSubmit = async () => {
@@ -29,7 +30,14 @@ const MainBoard = () => {
             setAttemptList(verifiedRes.verifiedSelection);
             setGameStatus(verifiedRes.gameStatus);
         } catch (error) {
-            console.error('Error validating selection:', error);
+            let errMsg = 'Error validating selection';
+            if (error?.message && error?.message === 'INVALID_ATTEMPT') {
+                errMsg = 'Attempt not in word list';
+            }
+            setSnackbarState((draft) => {
+                draft.open = true;
+                draft.message = errMsg;
+            });
         }
     };
 

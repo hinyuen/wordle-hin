@@ -1,7 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useImmer } from 'use-immer';
-import { Attempt, GameStatus, LetterData, ResultType, VerifiedResponse } from '../type';
-import { BASE_API_URL, findFirstEmptySelection, findFirstUnSubmitted, initialAttemptList } from '../util';
+import { Attempt, GameStatus, LetterData, ResultType, SnackBarStateType, VerifiedResponse } from '../type';
+import {
+    BASE_API_URL,
+    findFirstEmptySelection,
+    findFirstUnSubmitted,
+    initialAttemptList,
+    initSnackbarState,
+} from '../util';
 
 const useGameSetUp = () => {
     const [answer, setAnswer] = useState<string>('');
@@ -11,6 +17,7 @@ const useGameSetUp = () => {
     const [oppAttemptList, setOppAttemptList] = useImmer<Attempt[]>(initialAttemptList);
     const [oppGameStatus, setOppGameStatus] = useState<GameStatus>(GameStatus.PLAYING);
     const [oppSelectedKey, setOppSelectedKey] = useState(new Map<string, ResultType>());
+    const [snackbarState, setSnackbarState] = useImmer<SnackBarStateType>(initSnackbarState);
 
     useEffect(() => {
         getAnswer();
@@ -27,15 +34,24 @@ const useGameSetUp = () => {
     };
 
     const validateSelection = async (attempts: Attempt[], answer: string): Promise<VerifiedResponse> => {
-        const res = await fetch(`${BASE_API_URL}/validate`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ attempts, answer }),
-        });
-        const data = (await res.json()) as VerifiedResponse;
-        return data;
+        try {
+            const res = await fetch(`${BASE_API_URL}/validate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ attempts, answer }),
+            });
+            if (res.status !== 200) {
+                const errorData = await res.json();
+                throw new Error(errorData.error || 'Unknown error');
+            }
+            const data = (await res.json()) as VerifiedResponse;
+            return data;
+        } catch (error) {
+            console.error('Error validating selection:', error);
+            throw error;
+        }
     };
 
     const deleteKey = () => {
@@ -58,13 +74,10 @@ const useGameSetUp = () => {
     };
 
     const insertKey = (key: string) => {
-        console.log('Inserting key', key);
         const unSubmittedIndex = findFirstUnSubmitted(attemptList);
-        console.log('Unsubmitted index is', unSubmittedIndex);
         if (unSubmittedIndex === -1) return;
         const att = attemptList[unSubmittedIndex];
         const firstEmptyIndex = findFirstEmptySelection(att.selection);
-        console.log('First empty index is', firstEmptyIndex);
         if (firstEmptyIndex === -1) return;
         setAttemptList((draft) => {
             draft[unSubmittedIndex].selection[firstEmptyIndex].letter = key;
@@ -72,8 +85,6 @@ const useGameSetUp = () => {
     };
 
     const saveSelectedKey = (selectedKeyList: LetterData[]) => {
-        console.log('Saving selected keys:', selectedKeyList);
-        console.log('Current selected key map:', selectedKey);
         const clonedMap = new Map<string, ResultType>(selectedKey);
         selectedKeyList.forEach((v) => {
             if (!clonedMap.has(v.letter)) {
@@ -96,8 +107,6 @@ const useGameSetUp = () => {
     };
 
     const saveOppSelectedKey = (selectedKeyList: LetterData[]) => {
-        console.log('Saving selected keys:', selectedKeyList);
-        console.log('Current selected key map:', oppSelectedKey);
         const clonedMap = new Map<string, ResultType>(oppSelectedKey);
         selectedKeyList.forEach((v) => {
             if (!clonedMap.has(v.letter)) {
@@ -149,6 +158,8 @@ const useGameSetUp = () => {
         oppSelectedKey,
         setOppSelectedKey,
         saveOppSelectedKey,
+        snackbarState,
+        setSnackbarState,
     };
 };
 
