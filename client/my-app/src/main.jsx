@@ -5,6 +5,7 @@ import SingleBoard from './page/main/SingleBoard.jsx';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import MultiRulePage from './page/multiRule/MultiRule.js';
 import MultiBoard from './page/multiBoard/MultiBoard.js';
+import AbsurdleBoard from './page/absurdleBoard/AbsurdleBoard.js';
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
@@ -13,6 +14,7 @@ createRoot(document.getElementById('root')).render(
                 <Route path="/" element={<SingleBoard />} />
                 <Route path="/multiplayer" element={<MultiRulePage />} />
                 <Route path="/game/:gameId" element={<MultiBoard />} />
+                <Route path="/absurdle" element={<AbsurdleBoard />} />
             </Routes>
         </BrowserRouter>
     </StrictMode>

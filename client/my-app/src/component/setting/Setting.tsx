@@ -18,10 +18,25 @@ const Setting = ({ isMulti }: { isMulti: boolean | undefined }) => {
         return 'Challenge Your Friend!';
     }, [location.pathname]);
 
+    const playModeBtnTxt = useMemo(() => {
+        if (location.pathname === '/absurdle') {
+            return 'Normal';
+        }
+        return 'Absurdle';
+    }, [location.pathname]);
+
+    const handlePlayModeChange = () => {
+        const target = location.pathname === '/absurdle' ? '/' : '/absurdle';
+        navigate(target);
+    };
+
     if (isMulti) return null;
 
     return (
         <div className="setting-wrapper">
+            <button style={{ marginRight: '0.5rem' }} onClick={handlePlayModeChange}>
+                {playModeBtnTxt}
+            </button>
             <button
                 onClick={() => {
                     let target = '/multiplayer';

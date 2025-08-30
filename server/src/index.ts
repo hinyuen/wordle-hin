@@ -1,10 +1,10 @@
 import express from 'express';
 import type { Request, Response } from 'express';
 import cors from 'cors';
-import { generateRandomWord, handleValidateSelection } from './util.js';
+import { BASE_ANSWER, generateRandomWord, handleValidateAbsurdleSelection, handleValidateSelection } from './util.js';
 import http from 'http';
 import { Server } from 'socket.io';
-import { Attempt } from './type.js';
+import { AbsurdleGame, Attempt } from './type.js';
 
 const app = express();
 const PORT = 3001;
@@ -35,10 +35,6 @@ app.use(
 );
 app.use(express.json());
 
-app.get('/', (req: Request, res: Response) => {
-    res.send('Hello from Express + TypeScript!');
-});
-
 app.get('/answer', (req: Request, res: Response) => {
     try {
         const answer = generateRandomWord();
@@ -50,10 +46,29 @@ app.get('/answer', (req: Request, res: Response) => {
 });
 
 app.post('/validate', (req: Request, res: Response) => {
-    console.log('req.body => ', req.body);
     const { answer, attempts } = req.body;
     try {
         const data = handleValidateSelection(attempts, answer);
+        res.json({
+            verifiedSelection: data.verifiedSelection,
+            currentAttempt: data.currentAttempt,
+            gameStatus: data.gameStatus,
+        }).status(200);
+    } catch (error) {
+        console.error('Error verifying selection:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+const absurdleGames = new Map<string, AbsurdleGame>();
+
+app.post('/validateAbsurdle', (req: Request, res: Response) => {
+    try {
+        const { attempts, gameId } = req.body;
+        if (!absurdleGames.has(gameId)) {
+            absurdleGames.set(gameId, { pool: BASE_ANSWER });
+        }
+        const data = handleValidateAbsurdleSelection(attempts, absurdleGames, gameId);
         res.json({
             verifiedSelection: data.verifiedSelection,
             currentAttempt: data.currentAttempt,
@@ -72,7 +87,6 @@ io.on('connection', (socket) => {
     socket.on('join', ({ gameId }) => {
         if (!gameData.has(gameId)) {
             const answer = generateRandomWord();
-            console.log('gen answer => ', answer);
             gameData.set(gameId, { answer });
         }
         const room = io.sockets.adapter.rooms.get(gameId);
@@ -80,7 +94,6 @@ io.on('connection', (socket) => {
 
         if (numPlayers >= 2) {
             // Room is full, notify the user
-            console.log('Room full', socket.id);
             socket.emit('roomFull', { message: 'This game already has 2 players.' });
             return;
         }
@@ -99,8 +112,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('submitAttempt', ({ gameId, attempts }: { gameId: string; attempts: Attempt[] }) => {
-        console.log('gameId', gameId);
-        console.log('attempts', attempts);
         const game = gameData.get(gameId);
         const answer = game?.answer;
         if (!answer) return;

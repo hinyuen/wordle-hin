@@ -3,6 +3,7 @@ import { useBackgroundContext } from '../background/context';
 import { useMemo } from 'react';
 import { BASE_ANSWER, BASE_ATTEMPT_OBJ, BASE_ATTEMPTS, wordsList } from '../../util';
 import { GameStatus } from '../../type';
+import { useLocation } from 'react-router';
 
 export type SettingDialogProps = {
     open: boolean;
@@ -11,6 +12,7 @@ export type SettingDialogProps = {
 
 const SettingDialog = ({ open = false, setOpen }: SettingDialogProps) => {
     const { setAttemptList, attemptList, answer, setAnswer, gameStatus } = useBackgroundContext();
+    const location = useLocation();
 
     const attemptRounds = useMemo(() => {
         if (!attemptList || !attemptList.length) return BASE_ATTEMPTS;
@@ -28,10 +30,11 @@ const SettingDialog = ({ open = false, setOpen }: SettingDialogProps) => {
 
     const disabledSetting = useMemo(() => {
         if ([GameStatus.WON, GameStatus.LOSE].includes(gameStatus)) return false;
+        if (location.pathname === '/absurdle') return true;
         const firstAttempt = attemptList[0];
         const isUserStarted = firstAttempt.selection.some((item) => item.letter.length > 0);
         return isUserStarted;
-    }, [gameStatus, attemptList]);
+    }, [gameStatus, attemptList, location.pathname]);
 
     return (
         <Dialog
@@ -67,36 +70,39 @@ const SettingDialog = ({ open = false, setOpen }: SettingDialogProps) => {
                         onBlur={(e) => (e.target.style.borderColor = '#ccc')}
                         onChange={(e) => updateAttemptList(Number(e.target.value))}
                     />
-                    <button onClick={() => console.log(wordsList)}>log</button>
                 </div>
                 <div style={{ margin: 5, display: 'flex', gap: '1rem', alignItems: 'center' }}>
                     <label style={{ width: 160 }}>Answer:</label>
-                    <select
-                        disabled={disabledSetting}
-                        value={answer}
-                        style={{
-                            width: '200px',
-                            padding: '10px 14px',
-                            border: '1px solid #ccc',
-                            borderRadius: '8px',
-                            fontSize: '1rem',
-                            outline: 'none',
-                            transition: 'border-color 0.2s',
-                            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-                            appearance: 'none', // removes default arrow for more custom styling
-                            WebkitAppearance: 'none',
-                            MozAppearance: 'none',
-                        }}
-                        onFocus={(e) => (e.target.style.borderColor = '#1976d2')}
-                        onBlur={(e) => (e.target.style.borderColor = '#ccc')}
-                        onChange={(e) => setAnswer(e.target.value)}
-                    >
-                        {BASE_ANSWER.map((word) => (
-                            <option key={word} value={word}>
-                                {word}
-                            </option>
-                        ))}
-                    </select>
+                    {location.pathname === '/absurdle' ? (
+                        <span>Absurdle mode, try your best!</span>
+                    ) : (
+                        <select
+                            disabled={disabledSetting}
+                            value={answer}
+                            style={{
+                                width: '200px',
+                                padding: '10px 14px',
+                                border: '1px solid #ccc',
+                                borderRadius: '8px',
+                                fontSize: '1rem',
+                                outline: 'none',
+                                transition: 'border-color 0.2s',
+                                boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                                appearance: 'none', // removes default arrow for more custom styling
+                                WebkitAppearance: 'none',
+                                MozAppearance: 'none',
+                            }}
+                            onFocus={(e) => (e.target.style.borderColor = '#1976d2')}
+                            onBlur={(e) => (e.target.style.borderColor = '#ccc')}
+                            onChange={(e) => setAnswer(e.target.value)}
+                        >
+                            {BASE_ANSWER.map((word) => (
+                                <option key={word} value={word}>
+                                    {word}
+                                </option>
+                            ))}
+                        </select>
+                    )}
                 </div>
             </DialogContent>
             <DialogActions>

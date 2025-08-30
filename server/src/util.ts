@@ -1,6 +1,7 @@
-import { Attempt, GameStatus, LetterData, ResultType, VerifiedResponse } from './type.js';
+import { AbsurdleGame, Attempt, GameStatus, LetterData, ResultType, VerifiedResponse } from './type.js';
 
 export const BASE_ANSWER = ['HELLO', 'WORLD', 'QUITE', 'FANCY', 'FRESH', 'PANIC', 'CRAZY', 'BUGGY', 'SCARE', 'MARRY'];
+
 export const generateRandomWord = () => {
     return BASE_ANSWER[Math.floor(Math.random() * BASE_ANSWER.length)];
 };
@@ -74,4 +75,64 @@ export const getVerifiedSelection = (selection: LetterData[], answer: string): L
         console.error('Error in getVerifiedSelection:', error);
         return selection;
     }
+};
+
+const getFilteredPool = (pool: string[], selection: LetterData[]): string[] => {
+    const patternMap: Record<string, string[]> = {};
+
+    for (const answerOption of pool) {
+        // Get feedback for this answerOption
+        const feedback = getVerifiedSelection(selection, answerOption);
+        // Convert feedback to a string pattern, e.g. "HIT-MISS-PRESENT-MISS-MISS"
+        const pattern = feedback.map((l) => l.type).join('-');
+        // Group answerOptions by pattern
+        if (!patternMap[pattern]) patternMap[pattern] = [];
+        patternMap[pattern].push(answerOption);
+    }
+
+    // Find the largest group (most ambiguous feedback)
+    let max = 0;
+    let largestGroup: string[] = [];
+    for (const group of Object.values(patternMap)) {
+        if (group.length > max) {
+            max = group.length;
+            largestGroup = group;
+        }
+    }
+    return largestGroup;
+};
+
+export const handleValidateAbsurdleSelection = (
+    attemps: Attempt[],
+    absurdleGames: Map<string, AbsurdleGame>,
+    gameId: string
+): VerifiedResponse => {
+    if (!gameId) throw new Error('No game found');
+    const game = absurdleGames.get(gameId);
+    if (!game) throw new Error('No game found');
+    let verifiedSelection: LetterData[] = [];
+    let gameStatus: GameStatus = GameStatus.PLAYING;
+    const clonedAttempts = structuredClone(attemps);
+    const unSubmittedIndex = findFirstUnSubmitted(clonedAttempts);
+    if (unSubmittedIndex === -1) throw new Error('No unsubmitted attempt found');
+    const att = clonedAttempts[unSubmittedIndex];
+    const updatedPool = getFilteredPool(game.pool, att.selection);
+    let hint: string = '';
+    if (updatedPool.length) {
+        hint = updatedPool[0];
+    }
+    game.pool = updatedPool;
+    absurdleGames.set(gameId, game);
+    verifiedSelection = getVerifiedSelection(att.selection, hint);
+    clonedAttempts[unSubmittedIndex].selection = verifiedSelection;
+    clonedAttempts[unSubmittedIndex].isSubmit = true;
+    gameStatus = checkGameStatus(verifiedSelection, clonedAttempts.length - 1, unSubmittedIndex);
+    if (gameStatus !== GameStatus.PLAYING) {
+        absurdleGames.delete(gameId);
+    }
+    return {
+        verifiedSelection: clonedAttempts,
+        currentAttempt: verifiedSelection,
+        gameStatus: gameStatus,
+    };
 };

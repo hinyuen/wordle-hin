@@ -27,9 +27,6 @@ export type VerifiedResponse = {
     gameStatus: GameStatus;
 };
 
-export type SocketVerifiedResponse = {
-    verifiedSelection: Attempt[];
-    currentAttempt: LetterData[];
-    gameStatus: GameStatus;
-    userId: string;
+export type AbsurdleGame = {
+    pool: string[];
 };
