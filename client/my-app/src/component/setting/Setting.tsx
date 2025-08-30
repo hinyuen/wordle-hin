@@ -6,7 +6,7 @@ import SettingDialog from './SettingDialog';
 import { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
-const Setting = () => {
+const Setting = ({ isMulti }: { isMulti: boolean | undefined }) => {
     const [openDialog, setOpenDialog] = useState<boolean>(false);
     const navigate = useNavigate();
     const location = useLocation();
@@ -17,6 +17,8 @@ const Setting = () => {
         }
         return 'Challenge Your Friend!';
     }, [location.pathname]);
+
+    if (isMulti) return null;
 
     return (
         <div className="setting-wrapper">

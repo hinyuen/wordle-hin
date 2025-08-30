@@ -24,6 +24,18 @@ export const generateRandomWord = () => {
     // return 'MARRY';
 };
 
+export function generateGameId(length = 21) {
+    // Create a random array of bytes
+    const array = new Uint8Array(length);
+    window.crypto.getRandomValues(array);
+    // Convert to base64 and make it URL-safe
+    return btoa(String.fromCharCode(...array))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '')
+        .slice(0, length);
+}
+
 export const wordsList = words.words;
 
 export const BASE_API_URL = 'http://localhost:3001';

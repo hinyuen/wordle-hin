@@ -3,7 +3,7 @@ import Setting from '../setting/Setting';
 import { BackgroundContext } from './context';
 import useGameSetUp from '../../hooks/useGameSetUp';
 
-export const Background: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
+export const Background: React.FC<React.PropsWithChildren<{ isMulti?: boolean }>> = ({ children, isMulti = false }) => {
     const { answer, setAnswer, attemptList, setAttemptList, gameStatus, setGameStatus, getAnswer, validateSelection } =
         useGameSetUp();
 
@@ -21,7 +21,7 @@ export const Background: React.FC<React.PropsWithChildren<{}>> = ({ children }) 
                     validateSelection,
                 }}
             >
-                <Setting />
+                <Setting isMulti={isMulti} />
                 {children}
             </BackgroundContext.Provider>
         </div>
