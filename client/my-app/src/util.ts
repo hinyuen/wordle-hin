@@ -39,3 +39,13 @@ export function generateGameId(length = 21) {
 export const wordsList = words.words;
 
 export const BASE_API_URL = 'http://localhost:3001';
+
+export const findFirstUnSubmitted = (attemptList: Attempt[] = []) => {
+    const index = attemptList.findIndex((attempt) => !attempt.isSubmit);
+    return index;
+};
+
+export const findFirstEmptySelection = (selection: LetterData[] = []) => {
+    const index = selection.findIndex((item) => !item.letter.length);
+    return index;
+};

@@ -4,8 +4,24 @@ import { BackgroundContext } from './context';
 import useGameSetUp from '../../hooks/useGameSetUp';
 
 export const Background: React.FC<React.PropsWithChildren<{ isMulti?: boolean }>> = ({ children, isMulti = false }) => {
-    const { answer, setAnswer, attemptList, setAttemptList, gameStatus, setGameStatus, getAnswer, validateSelection } =
-        useGameSetUp();
+    const {
+        answer,
+        setAnswer,
+        attemptList,
+        setAttemptList,
+        gameStatus,
+        setGameStatus,
+        getAnswer,
+        validateSelection,
+        enableSubmit,
+        deleteKey,
+        insertKey,
+        saveSelectedKey,
+        selectedKey,
+        setSelectedKey,
+        setOppAttemptList,
+        oppAttemptList,
+    } = useGameSetUp();
 
     return (
         <div style={{ width: '100%', height: '100vh' }}>
@@ -19,6 +35,14 @@ export const Background: React.FC<React.PropsWithChildren<{ isMulti?: boolean }>
                     setGameStatus,
                     getAnswer,
                     validateSelection,
+                    enableSubmit,
+                    deleteKey,
+                    insertKey,
+                    saveSelectedKey,
+                    selectedKey,
+                    setSelectedKey,
+                    setOppAttemptList,
+                    oppAttemptList,
                 }}
             >
                 <Setting isMulti={isMulti} />

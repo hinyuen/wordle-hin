@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react';
-import { Attempt, GameStatus, VerifiedResponse } from '../mainboard/type';
+import { Attempt, GameStatus, LetterData, ResultType, VerifiedResponse } from '../mainboard/type';
 import { Updater } from 'use-immer';
 type BackgroundContextType = {
     answer: string;
@@ -10,6 +10,14 @@ type BackgroundContextType = {
     setGameStatus: React.Dispatch<React.SetStateAction<GameStatus>>;
     getAnswer: () => Promise<void>;
     validateSelection: (attempts: Attempt[], answer: string) => Promise<VerifiedResponse>;
+    enableSubmit: boolean;
+    deleteKey: () => void;
+    insertKey: (key: string) => void;
+    saveSelectedKey: (selectedKeyList: LetterData[]) => void;
+    selectedKey: Map<string, ResultType>;
+    setSelectedKey: React.Dispatch<React.SetStateAction<Map<string, ResultType>>>;
+    oppAttemptList: Attempt[];
+    setOppAttemptList: Updater<Attempt[]>;
 };
 export const BackgroundContext = createContext<BackgroundContextType | undefined>(undefined);
 

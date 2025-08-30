@@ -64,24 +64,43 @@ app.post('/validate', (req: Request, res: Response) => {
     }
 });
 
+const gameData = new Map<string, { answer: string }>();
+
 // Socket.IO connection handler
 io.on('connection', (socket) => {
-    console.log('A user connected:', socket.id);
-
     socket.on('join', ({ gameId }) => {
+        if (!gameData.has(gameId)) {
+            const answer = generateRandomWord();
+            gameData.set(gameId, { answer });
+        }
+        const room = io.sockets.adapter.rooms.get(gameId);
+        const numPlayers = room ? room.size : 0;
+
+        if (numPlayers >= 2) {
+            // Room is full, notify the user
+            console.log('Room full', socket.id);
+            socket.emit('roomFull', { message: 'This game already has 2 players.' });
+            return;
+        }
+
         socket.join(gameId);
-        console.log(`User ${socket.id} joined game ${gameId}`);
-        // You can emit events to the room here
+        console.log('A user connected:', socket.id);
+        // After joining, check again and emit 'ready' if 2 players are present
+        const updatedRoom = io.sockets.adapter.rooms.get(gameId);
+        const updatedNumPlayers = updatedRoom ? updatedRoom.size : 0;
+        if (updatedNumPlayers === 2) {
+            io.to(gameId).emit('ready', { message: 'Both players are here! Game can start.' });
+        }
+    });
+
+    socket.on('gameStart', ({ gameId }) => {
+        io.to(gameId).emit('gameStarted', { message: 'Game has started!' });
     });
 
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
     });
 });
-
-// app.listen(PORT, () => {
-//     console.log(`Server running on http://localhost:${PORT}`);
-// });
 
 server.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
