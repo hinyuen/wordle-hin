@@ -1,5 +1,6 @@
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material';
 import { RuleText } from './Rule';
+import { COLOR } from '../../util';
 
 const RuleModal = ({ open = false, playersReady = false, startGame }) => {
     const btnText = playersReady ? 'Start Game' : 'Waiting for other player...';
@@ -26,7 +27,7 @@ const RuleModal = ({ open = false, playersReady = false, startGame }) => {
             open={open}
             PaperProps={{
                 style: {
-                    backgroundColor: '#1e1e1e',
+                    backgroundColor: COLOR.background,
                     color: 'white',
                 },
             }}
@@ -37,7 +38,7 @@ const RuleModal = ({ open = false, playersReady = false, startGame }) => {
             </DialogContent>
             <DialogActions>
                 <Button
-                    style={{ backgroundColor: !playersReady ? 'rgb(86, 86, 201)' : 'grey', color: 'white' }}
+                    style={{ backgroundColor: !playersReady ? COLOR.secondary : 'grey', color: 'white' }}
                     onClick={handleCopy}
                     disabled={playersReady}
                 >
@@ -45,7 +46,7 @@ const RuleModal = ({ open = false, playersReady = false, startGame }) => {
                 </Button>
                 <Button
                     variant="contained"
-                    style={{ backgroundColor: 'rgb(58,58,60)', color: 'white' }}
+                    style={{ backgroundColor: COLOR.primary, color: 'white' }}
                     disabled={!playersReady}
                     onClick={startGame}
                 >

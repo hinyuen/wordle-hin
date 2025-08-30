@@ -1,6 +1,6 @@
 import CharSelectionRow from '../charSelectionRow/CharSelectionRow';
 import KeyBoard from '../keyboard/Keyboard';
-import { GameStatus, ResultType } from './type';
+import { GameStatus, ResultType } from '../../type';
 import ResultGrid from '../resultGrid/ResultGrid';
 import { initialAttemptList } from '../../util';
 import { useBackgroundContext } from '../background/context';
@@ -39,8 +39,6 @@ const MainBoard = () => {
         setGameStatus(GameStatus.PLAYING);
         setSelectedKey(new Map<string, ResultType>());
     };
-
-    console.log('answer => ', answer);
 
     return (
         <>

@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react';
-import { Attempt, GameStatus, LetterData, ResultType, VerifiedResponse } from '../mainboard/type';
+import { Attempt, GameStatus, LetterData, ResultType, VerifiedResponse } from '../../type';
 import { Updater } from 'use-immer';
 type BackgroundContextType = {
     answer: string;

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useImmer } from 'use-immer';
-import { Attempt, GameStatus, LetterData, ResultType, VerifiedResponse } from '../component/mainboard/type';
+import { Attempt, GameStatus, LetterData, ResultType, VerifiedResponse } from '../type';
 import { BASE_API_URL, findFirstEmptySelection, findFirstUnSubmitted, initialAttemptList } from '../util';
 
 const useGameSetUp = () => {

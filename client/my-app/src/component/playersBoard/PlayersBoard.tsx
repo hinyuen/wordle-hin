@@ -1,20 +1,23 @@
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import RuleModal from '../Rule/RuleModal';
 import { io, Socket } from 'socket.io-client';
-import { BASE_API_URL } from '../../util';
+import { BASE_API_URL, generateGameId, initMulitPlayerResult } from '../../util';
 import KeyBoard from '../keyboard/Keyboard';
-import { GameStatus, SocketVerifiedResponse } from '../mainboard/type';
+import { GameStatus, MultiPlayerResult, SocketVerifiedResponse } from '../../type';
 import { useBackgroundContext } from '../background/context';
 import CharSelectionRow from '../charSelectionRow/CharSelectionRow';
-import ResultGrid from '../resultGrid/ResultGrid';
+import ResultModal from '../resultModal/ResultModal';
+import { useImmer } from 'use-immer';
 
 const PlayersBoard = () => {
     const socketRef = useRef<Socket | null>(null);
     const userIdRef = useRef<string | undefined>(undefined);
     const params = useParams();
-    const [open, setOpen] = useState(true);
-    const [playersReady, setPlayersReady] = useState(false);
+    const navigate = useNavigate();
+    const [ruleModalOpen, setRuleModalOpen] = useState<boolean>(true);
+    const [playersReady, setPlayersReady] = useState<boolean>(false);
+    const [result, setResult] = useImmer<MultiPlayerResult>(initMulitPlayerResult);
     const {
         setGameStatus,
         gameStatus,
@@ -32,31 +35,23 @@ const PlayersBoard = () => {
         oppGameStatus,
     } = useBackgroundContext();
 
-    const handleStartGame = () => {
-        if (!socketRef.current) return;
-        socketRef.current.emit('gameStart', { gameId: params?.gameId });
-    };
-
     useEffect(() => {
         if (!params) return;
         const { gameId } = params;
         socketRef.current = io(BASE_API_URL);
         if (socketRef.current) {
             socketRef.current.on('connect', () => {
-                console.log('Connected:', socketRef.current?.id);
                 userIdRef.current = socketRef.current?.id;
                 socketRef.current?.emit('join', { gameId });
             });
 
             socketRef.current.on('ready', () => {
                 // Handle ready event
-                console.log('Both players are ready!');
                 setPlayersReady(true);
             });
 
             socketRef.current.on('gameStarted', () => {
-                console.log('Game has started');
-                setOpen(false);
+                setRuleModalOpen(false);
             });
 
             socketRef.current.on('validationResult', (res: SocketVerifiedResponse) => {
@@ -75,6 +70,11 @@ const PlayersBoard = () => {
                     }
                 }
             });
+
+            socketRef.current.on('roomFull', () => {
+                alert('Room is full. Please wait for the next game.');
+                navigate('/');
+            });
         }
 
         return () => {
@@ -84,6 +84,24 @@ const PlayersBoard = () => {
         };
     }, [params]);
 
+    useEffect(() => {
+        if (gameStatus === GameStatus.WON || gameStatus === GameStatus.LOSE) {
+            const resultTxt = gameStatus === GameStatus.WON ? 'You won!' : 'You lost!';
+            setResult((draft) => {
+                draft.resultTxt = resultTxt;
+                draft.resultModalOpen = true;
+            });
+        }
+
+        if (oppGameStatus === GameStatus.WON || oppGameStatus === GameStatus.LOSE) {
+            const resultTxt = oppGameStatus === GameStatus.WON ? 'You lost!' : 'You won!';
+            setResult((draft) => {
+                draft.resultTxt = resultTxt;
+                draft.resultModalOpen = true;
+            });
+        }
+    }, [gameStatus, oppAttemptList]);
+
     const keyBoardEnabled = useMemo(() => {
         if (!playersReady || gameStatus !== GameStatus.PLAYING || oppGameStatus !== GameStatus.PLAYING) return false;
         return true;
@@ -92,11 +110,19 @@ const PlayersBoard = () => {
     const onSubmit = () => {
         if (!socketRef.current) return;
         socketRef.current.emit('submitAttempt', { gameId: params?.gameId, attempts: attemptList });
-        console.log('Submit');
     };
 
     const onRestart = () => {
-        // window.location.reload();
+        window.location.href = `/game/${generateGameId()}`;
+    };
+
+    const onPlaySolo = () => {
+        navigate('/');
+    };
+
+    const handleStartGame = () => {
+        if (!socketRef.current) return;
+        socketRef.current.emit('gameStart', { gameId: params?.gameId });
     };
 
     return (
@@ -137,8 +163,13 @@ const PlayersBoard = () => {
                 onSubmit={onSubmit}
                 selectedKey={selectedKey}
             />
-            <ResultGrid gameStatus={gameStatus} onRestart={onRestart} />
-            <RuleModal open={open} playersReady={playersReady} startGame={handleStartGame} />
+            <ResultModal
+                open={result.resultModalOpen}
+                onRestart={onRestart}
+                title={result.resultTxt}
+                onPlaySolo={onPlaySolo}
+            />
+            <RuleModal open={ruleModalOpen} playersReady={playersReady} startGame={handleStartGame} />
         </>
     );
 };

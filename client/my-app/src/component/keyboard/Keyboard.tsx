@@ -1,5 +1,5 @@
 import Key from '../key/Key';
-import { ResultType } from '../mainboard/type';
+import { ResultType } from '../../type';
 import './keyboard.css';
 
 const firstRow = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'];

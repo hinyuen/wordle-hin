@@ -1,6 +1,6 @@
 import React from 'react';
 import './key.css';
-import { ResultType } from '../mainboard/type';
+import { ResultType } from '../../type';
 type KeyProps = {
     // other props here if needed
     children: React.ReactNode;

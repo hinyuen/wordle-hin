@@ -1,4 +1,4 @@
-import { LetterData } from '../mainboard/type';
+import { LetterData } from '../../type';
 import './charSelectionRow.css';
 export type CharSelectionRowProps = {
     selections: LetterData[];

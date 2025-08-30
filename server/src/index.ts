@@ -4,7 +4,7 @@ import cors from 'cors';
 import { generateRandomWord, handleValidateSelection } from './util.js';
 import http from 'http';
 import { Server } from 'socket.io';
-import { Attempt, GameStatus } from './type.js';
+import { Attempt } from './type.js';
 
 const app = express();
 const PORT = 3001;
@@ -86,7 +86,6 @@ io.on('connection', (socket) => {
         }
 
         socket.join(gameId);
-        console.log('A user connected:', socket.id);
         // After joining, check again and emit 'ready' if 2 players are present
         const updatedRoom = io.sockets.adapter.rooms.get(gameId);
         const updatedNumPlayers = updatedRoom ? updatedRoom.size : 0;
@@ -104,7 +103,6 @@ io.on('connection', (socket) => {
         console.log('attempts', attempts);
         const game = gameData.get(gameId);
         const answer = game?.answer;
-        console.log('get answer => ', answer);
         if (!answer) return;
         const data = handleValidateSelection(attempts, answer);
         io.to(gameId).emit('validationResult', { data: data, userId: socket.id });

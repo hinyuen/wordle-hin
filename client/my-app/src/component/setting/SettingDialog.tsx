@@ -2,7 +2,7 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/
 import { useBackgroundContext } from '../background/context';
 import { useMemo } from 'react';
 import { BASE_ANSWER, BASE_ATTEMPT_OBJ, BASE_ATTEMPTS, wordsList } from '../../util';
-import { GameStatus } from '../mainboard/type';
+import { GameStatus } from '../../type';
 
 export type SettingDialogProps = {
     open: boolean;

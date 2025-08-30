@@ -31,3 +31,8 @@ export type SocketVerifiedResponse = {
     userId: string;
     data: VerifiedResponse;
 };
+
+export type MultiPlayerResult = {
+    resultTxt: string;
+    resultModalOpen: boolean;
+};

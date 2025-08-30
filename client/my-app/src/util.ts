@@ -1,4 +1,4 @@
-import { Attempt, LetterData, ResultType } from '../src/component/mainboard/type';
+import { Attempt, LetterData, ResultType } from './type';
 
 import words from './words.json';
 export const BASE_ANSWER = ['HELLO', 'WORLD', 'QUITE', 'FANCY', 'FRESH', 'PANIC', 'CRAZY', 'BUGGY', 'SCARE', 'MARRY'];
@@ -48,4 +48,15 @@ export const findFirstUnSubmitted = (attemptList: Attempt[] = []) => {
 export const findFirstEmptySelection = (selection: LetterData[] = []) => {
     const index = selection.findIndex((item) => !item.letter.length);
     return index;
+};
+
+export const COLOR = {
+    primary: 'rgb(58,58,60)',
+    secondary: 'rgb(86,86,201)',
+    background: '#1e1e1e',
+};
+
+export const initMulitPlayerResult = {
+    resultTxt: '',
+    resultModalOpen: false,
 };

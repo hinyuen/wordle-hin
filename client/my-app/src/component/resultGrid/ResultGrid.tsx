@@ -1,4 +1,4 @@
-import { GameStatus } from '../mainboard/type';
+import { GameStatus } from '../../type';
 
 export type ResultGridProps = {
     gameStatus: GameStatus;
