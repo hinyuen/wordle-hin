@@ -23,6 +23,7 @@ const useGameSetUp = () => {
         getAnswer();
     }, []);
 
+    // get answer from API for solo mode
     const getAnswer = async () => {
         try {
             const res = await fetch(`${BASE_API_URL}/answer`);
@@ -33,6 +34,7 @@ const useGameSetUp = () => {
         }
     };
 
+    // validate user selection via API
     const validateSelection = async (attempts: Attempt[], answer: string): Promise<VerifiedResponse> => {
         try {
             const res = await fetch(`${BASE_API_URL}/validate`, {
@@ -84,6 +86,7 @@ const useGameSetUp = () => {
         });
     };
 
+    // function for handling the selected key UI on keyboard
     const saveSelectedKey = (selectedKeyList: LetterData[]) => {
         const clonedMap = new Map<string, ResultType>(selectedKey);
         selectedKeyList.forEach((v) => {

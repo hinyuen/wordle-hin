@@ -30,7 +30,7 @@ const Setting = ({ isMulti }: { isMulti: boolean | undefined }) => {
         navigate(target);
     };
 
-    if (isMulti) return null;
+    if (isMulti) return null; // disable settings for multiplayer mode
 
     return (
         <div className="setting-wrapper">

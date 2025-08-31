@@ -1,12 +1,26 @@
 import { AbsurdleGame, Attempt, GameStatus, LetterData, ResultType, VerifiedResponse } from './type.js';
+// Utility functions for Wordle/Absurdle backend logic
 
+// List of possible answer words
 export const BASE_ANSWER = ['HELLO', 'WORLD', 'QUITE', 'FANCY', 'FRESH', 'PANIC', 'CRAZY', 'BUGGY', 'SCARE', 'MARRY'];
 
+/**
+ * Generates a random word from the base answer list.
+ * @returns {string} A random word.
+ */
 export const generateRandomWord = () => {
     return BASE_ANSWER[Math.floor(Math.random() * BASE_ANSWER.length)];
 };
 
+/**
+ * Checks the game status based on the latest guess.
+ * @param verifiedSelection - The result of the guess.
+ * @param attLastIndex - The last attempt index.
+ * @param currentIndex - The current attempt index.
+ * @returns {GameStatus} The current game status.
+ */
 const checkGameStatus = (verifiedSelection: LetterData[], attLastIndex: number, currentIndex: number): GameStatus => {
+    // Maximum possible points for a guess (used in Absurdle logic)
     if (verifiedSelection.every((v) => v.type === ResultType.HIT)) {
         return GameStatus.WON;
     }
@@ -16,6 +30,12 @@ const checkGameStatus = (verifiedSelection: LetterData[], attLastIndex: number, 
     return GameStatus.PLAYING;
 };
 
+/**
+ * Validates a user's guess against the answer for classic Wordle mode.
+ * @param attemptList - List of attempts so far.
+ * @param answer - The correct answer word.
+ * @returns {VerifiedResponse} Feedback and updated state.
+ */
 export const handleValidateSelection = (attemptList: Attempt[], answer: string): VerifiedResponse => {
     let unSubmittedIndex = -1;
     let gameStatus = GameStatus.PLAYING;
@@ -44,11 +64,22 @@ export const handleValidateSelection = (attemptList: Attempt[], answer: string):
     }
 };
 
+/**
+ * Finds the index of the first unsubmitted attempt.
+ * @param attemptList - List of attempts.
+ * @returns {number} Index of the first unsubmitted attempt, or -1 if all are submitted.
+ */
 export const findFirstUnSubmitted = (attemptList: Attempt[] = []) => {
     const index = attemptList.findIndex((attempt) => !attempt.isSubmit);
     return index;
 };
 
+/**
+ * Compares a guess to the answer and returns feedback for each letter.
+ * @param selection - The user's guess as an array of LetterData.
+ * @param answer - The answer word.
+ * @returns {LetterData[]} Feedback for each letter (HIT, PRESENT, MISS).
+ */
 export const getVerifiedSelection = (selection: LetterData[], answer: string): LetterData[] => {
     try {
         const unmatchedCount: Record<string, number> = {};
@@ -77,6 +108,13 @@ export const getVerifiedSelection = (selection: LetterData[], answer: string): L
     }
 };
 
+/**
+ * Filters the answer pool for Absurdle mode by grouping possible answers by feedback pattern.
+ * Keeps the largest group (most ambiguous feedback) to maximize difficulty.
+ * @param pool - Current possible answers.
+ * @param selection - The user's guess as LetterData[]
+ * @returns {string[]} The filtered pool of possible answers.
+ */
 const getFilteredPool = (pool: string[], selection: LetterData[]): string[] => {
     const patternMap: Record<string, string[]> = {};
 
@@ -102,6 +140,13 @@ const getFilteredPool = (pool: string[], selection: LetterData[]): string[] => {
     return largestGroup;
 };
 
+/**
+ * Validates a user's guess for Absurdle mode, updating the answer pool and generating feedback.
+ * @param attemps - List of attempts so far.
+ * @param absurdleGames - Map of gameId to AbsurdleGame state.
+ * @param gameId - The current game/session ID.
+ * @returns {VerifiedResponse} Feedback and updated state.
+ */
 export const handleValidateAbsurdleSelection = (
     attemps: Attempt[],
     absurdleGames: Map<string, AbsurdleGame>,
@@ -137,6 +182,11 @@ export const handleValidateAbsurdleSelection = (
     };
 };
 
+/**
+ * Checks if the user's guess (attempt) is a valid word in the answer list.
+ * @param attempt - The user's current attempt (letters selected).
+ * @returns {boolean} True if the guess is in BASE_ANSWER, false otherwise.
+ */
 export const isAttemptInsideWordList = (attempt: Attempt) => {
     const userGuess = attempt.selection.map((v) => v.letter).join('');
     return BASE_ANSWER.includes(userGuess);

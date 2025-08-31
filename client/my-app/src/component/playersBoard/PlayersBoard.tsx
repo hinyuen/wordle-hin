@@ -36,6 +36,7 @@ const PlayersBoard = () => {
         setSnackbarState,
     } = useBackgroundContext();
 
+    // effect for socket connection
     useEffect(() => {
         if (!params) return;
         const { gameId } = params;
@@ -56,11 +57,9 @@ const PlayersBoard = () => {
             });
 
             socketRef.current.on('validationResult', (res: SocketVerifiedResponse) => {
-                console.log('Validation result:', res);
                 if (res.userId) {
                     const data = res.data;
                     if (res.userId === userIdRef.current) {
-                        console.log('got userId match');
                         saveSelectedKey(data.currentAttempt);
                         setAttemptList(data.verifiedSelection);
                         setGameStatus(data.gameStatus);
@@ -85,6 +84,7 @@ const PlayersBoard = () => {
         };
     }, [params]);
 
+    // monitor game status changes and notify both players
     useEffect(() => {
         if (gameStatus === GameStatus.WON || gameStatus === GameStatus.LOSE) {
             const resultTxt = gameStatus === GameStatus.WON ? 'You won!' : 'You lost!';

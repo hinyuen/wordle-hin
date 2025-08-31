@@ -15,6 +15,8 @@ import { AbsurdleGame, Attempt } from './type.js';
 const app = express();
 const PORT = 3001;
 
+// --- CORS and Middleware Setup ---
+// Allow requests from local frontend (Vite dev server)
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
@@ -41,6 +43,9 @@ app.use(
 );
 app.use(express.json());
 
+// --- REST API Routes ---
+
+// Get a random answer word
 app.get('/answer', (req: Request, res: Response) => {
     try {
         const answer = generateRandomWord();
@@ -51,6 +56,7 @@ app.get('/answer', (req: Request, res: Response) => {
     }
 });
 
+// Validate a Wordle guess
 app.post('/validate', (req: Request, res: Response) => {
     const { answer, attempts } = req.body;
     try {
@@ -75,7 +81,7 @@ app.post('/validate', (req: Request, res: Response) => {
 });
 
 const absurdleGames = new Map<string, AbsurdleGame>();
-
+// Validate an Absurdle guess
 app.post('/validateAbsurdle', (req: Request, res: Response) => {
     try {
         const { attempts, gameId } = req.body;
@@ -105,6 +111,7 @@ app.post('/validateAbsurdle', (req: Request, res: Response) => {
 const gameData = new Map<string, { answer: string }>();
 
 // Socket.IO connection handler
+// Handle multiplayer game events (join, start, submitAttempt, etc.)
 io.on('connection', (socket) => {
     socket.on('join', ({ gameId }) => {
         if (!gameData.has(gameId)) {
@@ -146,6 +153,7 @@ io.on('connection', (socket) => {
     });
 });
 
+// Start the server
 server.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });

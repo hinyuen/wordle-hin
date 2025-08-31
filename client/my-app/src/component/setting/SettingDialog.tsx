@@ -20,7 +20,7 @@ const SettingDialog = ({ open = false, setOpen }: SettingDialogProps) => {
     }, [attemptList]);
 
     const updateAttemptList = (v: number) => {
-        if (v < 5) return;
+        if (v < 5) return; // minimum 5 attempts
         setAttemptList(
             Array.from({ length: v }, () => ({
                 ...BASE_ATTEMPT_OBJ,
@@ -28,6 +28,7 @@ const SettingDialog = ({ open = false, setOpen }: SettingDialogProps) => {
         );
     };
 
+    // Disable settings if game is started
     const disabledSetting = useMemo(() => {
         if ([GameStatus.WON, GameStatus.LOSE].includes(gameStatus)) return false;
         if (location.pathname === '/absurdle') return true;
