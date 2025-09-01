@@ -1,5 +1,6 @@
 # wordle-hin
 
+## Description
 This project uses React.js and Node.js with Express.js (both in TypeScript).
 
 For demo purposes, the word list is:
@@ -15,6 +16,7 @@ For demo purposes, the word list is:
 - SCARE
 - MARRY
 
+## Set up Recommendation
 - **Frontend:** Located in `client/my-app/src`
 - **Backend:** Located in `server/src`
 
