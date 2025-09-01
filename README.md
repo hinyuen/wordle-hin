@@ -2,6 +2,19 @@
 
 This project uses React.js and Node.js with Express.js (both in TypeScript).
 
+For demo purposes, the word list is:
+
+- HELLO
+- WORLD
+- QUITE
+- FANCY
+- FRESH
+- PANIC
+- CRAZY
+- BUGGY
+- SCARE
+- MARRY
+
 - **Frontend:** Located in `client/my-app/src`
 - **Backend:** Located in `server/src`
 
